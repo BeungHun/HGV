@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.match.hgv.admin.mapper.AdminSQLMapper">
+
+	
+	<select id="selectHGVadminIdAndPw" resultType="com.match.hgv.vo.AdminVo">
+		SELECT * FROM HGV_Admin 
+		WHERE admin_id = #{admin_id }
+		AND admin_pw = #{admin_pw }
+	</select>
+	
+	<select id="selectAllMember" resultType="com.match.hgv.vo.MemberVo">
+		SELECT * FROM HGV_Member
+		<if test="searchType != null and searchWord != null">
+			<choose>
+				<when test="searchType == 'member_id'">
+					WHERE member_id LIKE '%' || #{searchWord} || '%'
+				</when>
+				<when test="searchType == 'member_nick'">
+					WHERE member_nick LIKE '%' || #{searchWord} || '%'
+				</when>
+			</choose>
+		</if>
+	</select>
+	
+	<select id="selectMemberByNo" resultType="com.match.hgv.vo.MemberVo">
+		SELECT * FROM HGV_Member
+		WHERE member_no = #{member_no}
+	</select>
+	
+	<select id="selectMemberFreezeVoByNo" resultType="com.match.hgv.vo.MemberFreezeVo">
+		SELECT * FROM HGV_MemberFreeze 
+		WHERE member_no = #{member_no}
+	</select>
+	
+	<select id="selectAllMemberFreezeVo" resultType="com.match.hgv.vo.MemberFreezeVo">
+		SELECT * FROM HGV_MemberFreeze
+	</select>
+	
+	<select id="selectCountByMember" resultType="int">
+		SELECT count(*) FROM HGV_Member
+		<if test="searchType != null and searchWord != null">
+			<choose>
+				<when test="searchType == 'member_id'">
+					WHERE member_id LIKE '%' || #{searchWord} || '%'
+				</when>
+				<when test="searchType == 'member_nick">
+					WHERE member_nick LIKE '%' || #{searchWord} || '%'
+				</when>
+			</choose>
+		</if>
+	</select>
+	
+	
+	<update id="updateMemberFreezeVo">
+		UPDATE HGV_MemberFreeze 
+		SET member_FreezeOrNot = #{member_freezeOrNot},
+		member_canLoginDate = #{member_canLoginDate}
+		WHERE member_no = #{member_no} 
+	</update>
+	
+	<insert id="insertMemberFreezeVo">
+		INSERT INTO HGV_MemberFreeze VALUES(
+			#{member_no},
+			'Y',
+			#{member_canLoginDate}
+		)
+	</insert>
+	
+	<delete id="deleteMemberFreezeVoByNo">
+		DELETE FROM HGV_MEMBERFREEZE
+		WHERE MEMBER_NO = #{memberNo}
+	</delete>
+	
+	<!-- 신고관련 -->
+	<select id="selectAllReport" resultType="com.match.hgv.vo.ReportVo">
+		SELECT * FROM HGV_Report
+	</select>
+	
+	
+	<select id="selectReportByNo" resultType="com.match.hgv.vo.ReportVo">
+		SELECT * FROM HGV_Report
+		WHERE report_no = #{report_no}
+	</select>
+	
+	<select id="selectReport_file_infoVoList" resultType="com.match.hgv.vo.Report_file_infoVo">
+		SELECT * FROM HGV_Report_file_info
+		WHERE report_no = #{report_no}
+	</select>
+	
+	<delete id="deleteReport">
+		DELETE FROM HGV_report 
+		WHERE report_no = #{report_no}
+	</delete>
+	
+	<update id="updateReportComplete">
+		UPDATE HGV_REPORT 
+		SET report_complete = 1
+		WHERE report_no = #{report_no}
+	</update>
+
+
+</mapper>

@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.match.hgv.user.mapper.UserSQLMapper">
+	
+	<select id="selectByMemberNo" resultType="com.match.hgv.vo.UserVo">
+		SELECT * FROM HGV_User 
+		WHERE member_no = #{member_no }
+	</select>
+	
+	<select id="selectUserVoByUserNo" resultType="com.match.hgv.vo.UserVo">
+		SELECT * FROM HGV_User 
+		WHERE user_no = #{user_no }
+	</select>
+	
+	<insert id="insertUser">
+		INSERT INTO HGV_User values(
+			HGV_User_seq.nextval,
+			#{member_no},
+			#{user_heigth},
+			#{user_weight},
+			#{user_top},
+			#{user_bottom},
+			#{user_shoes}
+		)
+	</insert>
+	
+	<!-- 주문 관련 ! -->
+	<!-- Dual Order_no 생성 -->
+	<select id="createOrderPk" resultType="int">
+		SELECT HGV_Order_seq.nextval FROM dual
+	</select>
+	<!-- 새 오더 INSERT -->
+	<insert id="insertOrder">
+		INSERT INTO HGV_Order VALUES(
+		   #{order_no },
+		   #{user_no },
+		   #{stylist_card_no },
+		   #{card_category_no },
+		   'order',      
+		   #{order_heigth },
+		   #{order_weight },
+		   #{order_top },
+		   #{order_bottom },
+		   #{order_shoes },
+		   #{order_content },
+		   #{order_saleprice },
+		   SYSDATE
+		)
+	</insert>
+	
+	<!-- OrderNo로 OrderVo 찾기 -->
+	<select id="selectOrderVoByOrderNo" resultType="com.match.hgv.vo.OrderVo">
+		SELECT * FROM HGV_ORDER 
+		WHERE order_no = #{order_no}
+	</select>
+	
+	<!-- OrderNo로 OrderFileVoList 찾기 -->
+	<select id="selectOrderFileVoListByOrderNo" resultType="com.match.hgv.vo.OrderFileVo">
+		SELECT * FROM HGV_Order_file_info
+		WHERE order_no = #{order_no}
+		ORDER BY ORDER_FILE_NO ASC
+	</select>
+	
+	
+	
+	
+	
+	<!-- 주문 관련 끝 -->
+	
+	
+	<!-- 리뷰 -->
+	<!-- 리뷰 PK 생성 -->
+	<select resultType="int" id="createReviewPk">
+		SELECT HGV_Styling_Review_seq.nextval FROM dual 
+	</select>
+	<!-- 리뷰 Insert -->
+	<insert id="insertReview">
+		INSERT INTO HGV_Styling_Review VALUES(
+		   #{styling_review_no},
+		   #{styling_no },
+		   #{styling_review_starRatring } * 20,
+		   #{styling_review_content },
+		   SYSDATE
+		)
+	</insert>
+	<!-- 리뷰 작성 이미지 첨부  -->
+	<insert id="insertReviewImg">
+		INSERT INTO HGV_Styling_Review_Img VALUES(
+			HGV_Styling_Review_Img_seq.nextval,
+			#{styling_review_no},
+			#{styling_review_img_link},
+			#{styling_review_img_name}
+		)
+	</insert>
+	<!-- 리뷰 작성 이미지 출력-->
+	<select resultType="com.match.hgv.vo.StylingReview_ImgVo" id="selectStylingReviewImg">
+		SELECT * FROM HGV_Styling_Review_Img WHERE styling_review_no = #{styling_review_no}
+	</select>
+	<!-- 스타일링 번호로 Order_no 출력 -->
+	<select id="selectOrderNoByStylingNo" resultType="int">
+		SELECT ho.ORDER_NO  
+		FROM HGV_STYLING_RESPONSE hsr, HGV_ORDER ho 
+		WHERE hsr.ORDER_NO  = ho.ORDER_NO 
+		AND hsr.STYLING_NO = #{STYLING_NO}
+	</select>
+	
+	
+	
+	<!-- 리뷰 끝 -->
+	
+	
+	<!-- 마이 페이지 관련 시작 -->
+	<!-- 유저 - 요청리스트 출력 -->
+	<select id="selectAllOrderVoByUserNo" resultType="com.match.hgv.vo.OrderVo">
+		SELECT * FROM HGV_ORDER 
+		WHERE user_no = #{user_no}
+		Order By order_no DESC
+	</select>
+	<!-- 스타일리스트 - 요청받은 리스트 출력 -->
+	<select id="selectAllOrderVoByStylistCardNo" resultType="com.match.hgv.vo.OrderVo">
+		SELECT * FROM HGV_ORDER 
+		WHERE stylist_card_no = #{stylist_card_no}
+		Order By order_no DESC
+	</select>
+	<!-- 마이 페이지 끝 -->
+	
+	<!-- 스타일리스트 카드 찜하기 -->
+	<insert id="insertCardBookmark">
+		INSERT INTO HGV_User_card_bookmark VALUES(
+			HGV_User_card_bookmark_seq.nextval,
+			#{stylist_card_no },
+			#{user_no },
+			SYSDATE
+		)
+	</insert>
+	<!-- 스타일리스트 카드 찜하기 취소 -->
+	<delete id="deleteCardBookmark">
+		DELETE FROM HGV_User_card_bookmark 
+		WHERE stylist_card_no = #{stylist_card_no}
+		AND user_no = #{user_no}
+	</delete>
+	<!-- 카드의 토탈 찜 횟수 출력 -->
+	<select id="selectTotalCardBookMark" resultType="int">
+		SELECT count(*) FROM HGV_User_card_bookmark 
+		WHERE stylist_card_no = #{stylist_card_no}
+	</select>
+	<!-- 해당 유저가 카드 찜했는지 체크 여부 -->
+	<select id="selectUserCardBookMark" resultType="int">
+		SELECT count(*) FROM HGV_User_card_bookmark 
+		WHERE stylist_card_no = #{stylist_card_no}
+		AND user_no = #{user_no}
+	</select>
+
+
+	<!-- 22.08.04 추가 -->
+	<!-- 주문시 사진들 주입 -->
+	<insert id="insertOrderFile">
+		INSERT INTO HGV_Order_file_info values(
+		   HGV_Order_file_info_seq.nextval,
+		   #{order_no },
+		   #{order_file_link },
+		   #{order_file_originalName }
+		)
+	</insert> 
+
+</mapper>
+

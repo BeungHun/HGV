@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.match.hgv.stylist.mapper.StylistSQLMapper">
+	
+	<!-- 기능 -->
+	<!-- MemberNo로 StylistVo 를 찾기 -->
+	<select id="selectByMemberNo" resultType="com.match.hgv.vo.StylistVo">
+		SELECT * FROM HGV_Stylist 
+		WHERE member_no = #{member_no }
+	</select>
+	
+	<!-- 스타일리스트 넘버로 StylistVo 가져오기 -->
+	<select id="selectStylistVoByStylistNo" resultType="com.match.hgv.vo.StylistVo">
+		SELECT * FROM HGV_Stylist 
+		WHERE stylist_no = #{stylist_no}
+	</select>
+	
+	<!-- 스타일리스트 넘버로 스타일리스트 카드넘버 가져오기 -->
+	<select id="selectCardVoByStylistNo" resultType="com.match.hgv.vo.Stylist_CardVo">
+		SELECT * FROM HGV_Stylist_Card 
+		WHERE stylist_no = #{stylist_no }
+	</select>
+	
+	<!-- 스타일리스트 카드넘버로 CardVo 가져오기 -->
+	<select id="selectCardVoByCardNo" resultType="com.match.hgv.vo.Stylist_CardVo">
+		SELECT * FROM HGV_Stylist_Card 
+		WHERE stylist_card_no = #{stylist_card_no }
+	</select>
+	
+	<!-- 기능 끝-->
+	
+	
+	<!-- 회원가입 -->
+	<insert id="insertStylist">
+		INSERT INTO HGV_Stylist values(
+			HGV_Stylist_seq.nextval,
+			#{member_no}
+		)
+	</insert>
+	<!-- 회원가입 끝-->
+	
+	
+	
+	<!-- 스타일리스트 카드 시작-->
+	<!-- 카드 생성 -->
+	<insert id = "insertStylistCard">
+		INSERT INTO HGV_Stylist_Card VALUES(
+			HGV_Stylist_Card_seq.nextval,
+			#{stylist_no},
+			#{stylist_card_subtitle},
+			#{stylist_card_onedaycount},
+			#{stylist_card_content},
+			#{stylist_card_price}
+		)
+	</insert>
+	
+	<!-- 카드 수정 -->
+	<update id="updateStylistCard">
+		UPDATE HGV_Stylist_Card 
+		SET stylist_card_subtitle = #{stylist_card_subtitle },
+		stylist_card_onedaycount = #{stylist_card_onedaycount},
+		stylist_card_content = #{stylist_card_content},
+		stylist_card_price = #{stylist_card_price}
+		WHERE stylist_card_no = #{stylist_card_no }
+	</update>
+	
+	<!-- 스타일리스트 카테고리 관계테이블 주입 -->
+	<insert id="insertCardCategoryRelation">
+		INSERT INTO HGV_Card_Category_Relation VALUES(
+			HGV_Card_Category_Relation_seq.nextval,
+			#{stylist_card_no},
+			#{card_category_no}
+		)
+	</insert>
+	
+	<!-- 카테고리 출력 -->
+	<select resultType="com.match.hgv.vo.Card_CategoryVo" id="selectCardCategoryAll">
+		SELECT * FROM HGV_Card_Category
+	</select>
+	
+	<!-- 카드별 스타일리스트 카테고리 관계테이블 호출 --> 
+	<select id="selectCardCategoryRelation" resultType="com.match.hgv.vo.Card_Category_RelationVo">
+		SELECT * FROM HGV_Card_Category_Relation
+		WHERE stylist_card_no = #{stylist_card_no }
+	</select>
+	
+	<!-- 카테고리번호로 카테고리이름 호출 --> 
+	<select id="selectCategoryNameByCategoryNo" resultType="com.match.hgv.vo.Card_CategoryVo">
+		SELECT * FROM HGV_Card_Category
+		WHERE card_category_no = #{card_category_no }
+	</select>
+	
+	<!-- 카테고리 릴레이션 파일(첨부) -->
+	<insert id="insertCategoryRelateFile" >
+		INSERT into HGV_Card_Category_Relate_File VALUES(
+			HGV_Card_Category_Relate_seq.nextval,
+			#{card_category_relation_no },
+			#{card_category_relate_file_link},
+			#{card_category_relate_file_name},
+			SYSDATE
+		)
+	</insert>
+	
+	<!-- 카드 분류 관계파일 번호로 카테고리관계파일 추출 -->
+	<select id="selectCategoryRelateFile" resultType="com.match.hgv.vo.Card_Category_Relate_FileVo">
+		SELECT * FROM HGV_Card_Category_Relate_File 
+		WHERE card_category_relate_no = #{card_category_relate_no}
+	</select>
+	
+	
+	<!-- 카드 분류 관계파일 번호로 카테고리관계파일 추출 -->
+	
+	
+	<!-- 스타일리스트 카드 끝 -->
+	
+	<!-- 메인페이지 -->
+	<!-- 카드 리스트 전부 뽑아오기 -->
+	<select id="selectCardAll" resultType="com.match.hgv.vo.Stylist_CardVo">
+		SELECT * FROM HGV_Stylist_Card ORDER BY stylist_card_no DESC
+	</select>
+	<!-- 메인페이지 끝 -->
+	
+	
+	<!-- 주문 관련 -->
+	<!-- 주문을 반려하는 Process -->
+	<update id="updateOrderStateProcess">
+		UPDATE HGV_Order SET order_state = #{order_state}
+		WHERE order_no = #{order_no}
+	</update>
+	
+	<!-- 주문 요청 PK 생성 -->
+	<select id="createStylingResponsePk" resultType="int">
+		SELECT HGV_Styling_Response_seq.nextval FROM dual
+	</select>
+	
+	<!-- 주문 요청에 응답하여 카드 보내는 Process -->
+	<insert id = "insertStylingResponse" > 
+		INSERT INTO HGV_Styling_Response VALUES(
+		   #{styling_no },
+		   #{order_no },
+		   #{styling_content },
+		   SYSDATE
+		)
+	</insert>
+	
+	<!-- 주문 요청 이미지 파일첨부 Process -->
+	<insert id="insertinsertStylingResponseImg">
+		INSERT INTO HGV_Styling_Img VALUES (
+			HGV_Styling_Img_seq.nextval,
+			#{styling_no },
+			#{styling_img_link },
+			#{styling_img_originalName }
+		)
+	</insert>
+	
+	<!-- StylingNo로 Styling_ResponseVo 찾기 -->
+	<select id="selectStylingVoByStylingNo" resultType="com.match.hgv.vo.Styling_ResponseVo">
+		SELECT * FROM HGV_Styling_Response
+		WHERE styling_no = #{styling_no }
+	</select>
+	
+	<!-- StylingNo로 ArrayList<Styling_ResponseImgVo> 찾기 -->
+	<select id="selectResponseImgListByStylingNo" resultType="com.match.hgv.vo.Styling_ResponseImgVo">
+		SELECT * FROM HGV_Styling_Img
+		WHERE styling_no = #{styling_no }
+	</select>
+	
+	
+	
+	<!-- order_no로 Styling_ResponseVo 찾기 -->
+	<select id="selectStylingVoByOrderNo" resultType="com.match.hgv.vo.Styling_ResponseVo">
+		SELECT * FROM HGV_Styling_Response
+		WHERE order_no = #{order_no }
+	</select>
+	
+	<!-- 카드별 리뷰 가져오기 -->
+	<select id="selectReviewListByCardNo" resultType="com.match.hgv.vo.Styling_ReviewVo">
+		SELECT hsr2.* FROM HGV_ORDER ho, HGV_STYLING_RESPONSE hsr, HGV_STYLING_REVIEW hsr2 
+		WHERE hsr.order_no = ho.ORDER_NO
+		AND hsr.STYLING_NO = hsr2.STYLING_NO
+		AND ho.STYLIST_CARD_NO = #{stylist_card_no}
+		ORDER BY styling_review_no DESC
+	</select>
+	<!-- 리뷰별 사진들 가져오기 -->
+	<select id="selectReviewImgListByReviewNo" resultType="com.match.hgv.vo.StylingReview_ImgVo">
+		SELECT * FROM HGV_STYLING_REVIEW_IMG
+		WHERE STYLING_REVIEW_NO = #{styling_review_no}
+	</select>
+	<select id="selectTotalReviewStarRating" resultType="String">
+		SELECT avg(STYLING_REVIEW_STARRATRING) 
+		FROM HGV_STYLING_REVIEW hsr, HGV_STYLING_RESPONSE hsr2, HGV_ORDER ho, HGV_STYLIST_CARD hsc
+		WHERE hsr.STYLING_NO = hsr2.STYLING_NO 
+		AND hsr2.ORDER_NO = ho.ORDER_NO
+		AND ho.STYLIST_CARD_NO = hsc.STYLIST_CARD_NO
+		AND hsc.STYLIST_CARD_NO = #{stylist_card_no}
+	</select>
+	<!-- 주문관련 끝 -->	
+	
+	
+	<!-- 22.08.04 추가 -->
+	<select id="selectCategoryNoByCategoryName" resultType="int">
+		SELECT * FROM HGV_Card_Category
+		WHERE CARD_CATEGORY_NAME = #{card_category_name}
+	</select>
+	
+
+</mapper>
+

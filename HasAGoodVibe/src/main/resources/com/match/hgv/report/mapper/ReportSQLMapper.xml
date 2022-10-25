@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.match.hgv.report.mapper.ReportSQLMapper">
+
+<insert id="insertReportVo">
+	INSERT INTO HGV_Report VALUES(
+		HGV_Report_seq.nextval,
+		#{reporting_member_no},
+		#{reported_member_no},
+		#{report_confirm},
+		#{report_complete},
+		#{report_category},
+		#{report_content},
+		SYSDATE
+	)
+</insert>
+
+
+
+
+
+
+</mapper>

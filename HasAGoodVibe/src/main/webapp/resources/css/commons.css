@@ -1,0 +1,149 @@
+@import url(https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css);
+@import url(https://fonts.googleapis.com/css?family=Lato:400,300,900);
+
+html, body {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+}
+
+body {
+    font-family:'Lato', sans-serif;
+	font-size: 2.4em;
+    font-weight: 300;
+}
+
+
+
+.fs-7 {
+    font-size: 0.9rem;
+}
+.fs-8 {
+    font-size: 0.8rem;
+}
+.fs-9 {
+    font-size: 0.7rem;
+}
+.fs-10 {
+    font-size: 0.6rem;
+}
+
+#myPageContent, section { 
+	height:100% !important; 
+	width:100% !important;
+}
+
+.member_content{
+	-moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    -moz-box-shadow: 0 0 3px 3px #888;
+    -webkit-box-shadow: 0 0 3px 3px #888;
+    box-shadow: 0 0 3px 3px #888;
+    border-radius:2px;
+}
+
+.container-fluid {
+    padding-right: 0px !important;
+    padding-left: 0px !important;
+}
+
+.main_content {
+	width:100%;
+	margin:0px auto;
+	background-color:#fff;
+	padding:0px 0px;
+	margin-top: 2em;
+	position:relative;
+	border-left:1px solid rgba(0,0,0,0.08);
+	border-right:1px solid rgba(0,0,0,0.08);
+	border-top: 1px solid rgba(0,0,0,0.08);
+}
+
+.imageBox_full {
+	width:100%;
+	margin:0px auto;
+	overflow:hidden;
+}
+
+.imageBox_full img{
+	object-fit: cover;
+    width:100%;
+    height:auto
+}
+
+.logoImgBox {
+	height:60px;
+	width:auto;
+	object-fit: cover;
+}
+#menu {
+	padding: 20px;
+	transition: all 0.8s;
+}
+
+.on {
+	background-color: #262626;
+	padding: 0;
+	padding: 10px 0;
+}
+
+.on div > a {
+	color :black;
+	
+}
+
+.on i {
+	color :black;
+}
+
+.navbar-default .navbar-nav > .active > a, .navbar-default .navbar-nav > .active > a:hover, .navbar-default .navbar-nav > .active > a:focus {
+	color: black;
+	background-color: transparent;
+}
+.navbar-toggle {
+	border-radius: 0;
+}
+.navbar-default .navbar-toggle:hover, .navbar-default .navbar-toggle:focus {
+	background-color: black;
+	border-color: #d43031;
+}
+.navbar-default .navbar-toggle .icon-bar {
+	background-color: black;
+}
+.navbar-default .navbar-toggle:hover>.icon-bar {
+	background-color: black;
+}
+.section-title {
+	margin-bottom: 70px;
+}
+.section-title .overlay {
+	padding: 80px 0;
+	background: rgba(0, 0, 0, 0.7);
+}
+.section-title p {
+	font-size: 22px;
+}
+.section-title hr {
+	margin: 0 auto;
+	margin-bottom: 40px;
+}
+.btn-custom {
+	text-transform: uppercase;
+	color: #777;
+	background-color: transparent;
+	border: 2px solid #777;
+	padding: 14px 20px;
+	margin: 0;
+	font-size: 15px;
+	font-weight: 500;
+	letter-spacing: 0.5px;
+	border-radius: 0;
+	margin-top: 20px;
+	transition: all 0.3s;
+}
+.btn-custom:hover, .btn-custom:focus, .btn-custom.focus, .btn-custom:active, .btn-custom.active {
+	color: #ddd;
+	border: 2px solid #d43031;
+	background-color: #d43031;
+}
+

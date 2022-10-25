@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.match.hgv.member.mapper.MemberSQLMapper">
+	<select id="createMemberPk" resultType="int">
+		SELECT HGV_MEMBER_seq.nextval FROM dual
+	</select>
+	
+	<!-- Member_no로 MemberVo 가져오기 -->
+	<select id="selectByMemberNo" resultType="com.match.hgv.vo.MemberVo">
+		SELECT * FROM HGV_Member 
+		WHERE member_no = #{member_no }
+	</select>
+	
+	<!-- 회원가입 -->
+	<insert id="insertMember">
+		INSERT INTO HGV_Member values(
+			#{member_no },
+			#{member_id },
+			#{member_pw },
+			#{member_nick },
+			SYSDATE,
+			null,
+			0	
+		)
+	</insert>
+	
+	<!-- 중복확인 -->
+	<select id="selectCountById" resultType="int">
+		SELECT COUNT(*) FROM HGV_Member
+		WHERE member_id = #{member_id}
+	</select>
+	
+	<!-- 로그인 -->
+	<select id="selectHGVmemberIdAndPw" resultType="com.match.hgv.vo.MemberVo">
+		SELECT * FROM HGV_Member 
+		WHERE member_id = #{member_id }
+		AND member_pw = #{member_pw }
+	</select>
+	
+	<!-- 프로필 사진 변경 -->
+	<update id="updateHGVmemberProfile">
+		UPDATE HGV_Member 
+		SET member_profileimage_link = #{member_profileimage_link }
+		WHERE member_no = #{member_no }
+	</update>
+	
+	<!-- 회원 적립금 변경 :: 결제로 돈 증감되는 Process-->
+	<!-- 결제로 돈 증감되는 Process -->
+	<update id="updateMemberCash">
+		UPDATE HGV_MEMBER SET MEMBER_CASH = member_cash + #{cashValue }
+		WHERE Member_no = #{memberVo.member_no }
+	</update>
+	
+	<!-- 메세지 및 이벤트 관련 SQL --> 
+	<select id="selectAll" resultType="com.match.hgv.vo.MemberVo">
+		SELECT * FROM HGV_Member
+	</select>
+
+	<insert id="insertFriend">
+		INSERT INTO HGV_Friend VALUES(
+			HGV_Friend_seq.nextval,
+			#{member_no},
+			#{bfmember_no},
+			SYSDATE
+		)
+	</insert>
+
+	<select id="friendList" resultType="com.match.hgv.vo.FriendVo">
+		SELECT *
+		FROM HGV_Friend
+		WHERE member_no = #{member_no }
+	</select>
+	
+	<delete id="deleteFriend">
+		DELETE FROM HGV_Friend WHERE bfmember_no= #{bfmemberNo}
+	</delete>
+
+	<!-- 쪽지보내기 -->
+	<insert id="insertMessage">
+		INSERT INTO HGV_MESSAGE VALUES(
+		HGV_Message_seq.nextval,
+		#{member_no},
+		#{bfmember_no},
+		#{message_content},
+		SYSDATE,
+		NULL,
+		'N'
+		)
+	</insert>
+	
+	<select id="selectMemberInfo" resultType="com.match.hgv.vo.MemberVo">
+		select * from HGV_Member where member_no = #{bfmemberNo}
+	</select>
+	
+	<select id="getSentMessageList" resultType="com.match.hgv.vo.MessageVo">
+		SELECT * FROM HGV_Message WHERE member_no= #{memberNo}
+	</select>
+	
+	<select id="getRecievedMessageList" resultType="com.match.hgv.vo.MessageVo">
+		SELECT * FROM HGV_Message WHERE BFMEMBER_NO = #{memberNo}
+	</select>
+	
+	<update id="updateReadDate">
+		UPDATE HGV_Message SET MESSAGE_READ_DATE = SYSDATE , READ_CHECK ='Y'
+		WHERE MESSAGE_READ_DATE IS null AND BFMEMBER_NO = #{memberNo}
+	</update>
+	
+	<delete id="deleteMessage">
+		DELETE FROM HGV_Message WHERE message_no= #{messageNo}
+	</delete>
+	
+	<insert id="insertEComment">
+		INSERT INTO HGV_ATTEND_EVENT VALUES(
+		HGV_ATTEND_EVENT_seq.nextval,
+		#{member_no},
+		#{attend_count},
+		SYSDATE,
+		#{attend_comment}
+		)
+	</insert>
+	
+	<select id="e_commentList" resultType="com.match.hgv.vo.AttendVo">
+		SELECT*FROM HGV_ATTEND_EVENT
+	</select>
+	
+	<select id="selectCountByNo" resultType="int">
+		SELECT COUNT(*) FROM HGV_ATTEND_EVENT
+		WHERE member_no = #{member_no}
+		AND TO_CHAR(attend_date , 'yyyy-mm-dd') = TO_CHAR(SYSDATE,'yyyy-mm-dd')
+	</select>
+	
+	<delete id="deleteEComment">
+		DELETE FROM HGV_ATTEND_EVENT WHERE attend_no = #{attendNo}
+	</delete>
+	
+	<update id="updateEComment">
+		UPDATE HGV_ATTEND_EVENT SET attend_commentDate = SYSDATE,
+		attend_comment = #{attend_comment}
+		WHERE attend_no = #{attend_no}
+	</update>
+	
+	<!-- 신고 관련.. -->
+	<insert id="insertReportVo">
+	INSERT INTO HGV_Report VALUES(
+		#{report_no},
+		#{reporting_member_no},
+		#{reported_member_no},
+		#{report_confirm},
+		#{report_complete},
+		#{report_category},
+		#{report_content},
+		SYSDATE
+		)
+	</insert>
+	
+	<insert id="insertReport_file_infoVo">
+		INSERT INTO HGV_report_file_info VALUES(
+			HGV_Report_file_info_seq.nextval,
+			#{report_no},
+			#{report_file_link},
+			#{report_file_originalName}
+			)
+	</insert>
+		
+	<select id="createReportNoPk" resultType="int">
+		SELECT HGV_report_file_info_seq.nextval FROM dual
+	</select>
+	
+	<!--블로그 -->
+	<insert id="insertCategory">
+		INSERT INTO Blog_Category VALUES(
+		Blog_Category_seq.nextval,
+		#{stylist_no},
+		#{c_name},
+		'N'
+		)
+	</insert>
+	<select id="categoryList" resultType="com.match.hgv.vo.blogCategoryVo">
+		SELECT*FROM Blog_Category WHERE stylist_no = #{stylistNo }
+	</select>
+	<select id="selectByStylistNo" resultType="com.match.hgv.vo.StylistVo">
+		SELECT * FROM HGV_Stylist WHERE stylist_no = #{stylistNo }
+	</select>
+	<delete id="deleteCategory">
+		DELETE FROM Blog_Category WHERE c_no= #{c_No}
+	</delete>
+	<insert id="insertBlog">
+		INSERT INTO HGV_Blog VALUES(
+		HGV_Blog_seq.nextval,
+		#{stylist_no},
+		#{c_no},
+		#{blog_title},
+		#{blog_content},
+		SYSDATE,
+		0,
+		0,
+		'N'
+		)
+	</insert> 
+	<select id="selectCategoryByNo" resultType="com.match.hgv.vo.blogCategoryVo">
+		SELECT*FROM Blog_Category WHERE c_no= #{c_no}
+	</select>
+	<select id="boardList" resultType="com.match.hgv.vo.blogVo">
+		SELECT*FROM HGV_Blog
+		ORDER BY blog_no DESC
+	</select>
+	<select id="myBoardList" resultType="com.match.hgv.vo.blogVo">
+		SELECT*FROM HGV_Blog WHERE stylist_no = #{stylistNo }
+		ORDER BY blog_no DESC
+	</select>
+	<select id="selectBoard" resultType="com.match.hgv.vo.blogVo">
+		SELECT*FROM HGV_Blog WHERE blog_no = #{blog_no}
+	</select>
+	<select id="selectBoardBycNo" resultType="com.match.hgv.vo.blogVo">
+		SELECT*FROM HGV_Blog WHERE c_no=#{cNo}
+		ORDER BY blog_no DESC
+	</select>
+	<delete id="deleteBoard">
+		DELETE FROM HGV_Blog WHERE blog_no=#{blog_no}
+	</delete>
+	
+	<insert id="insertBlogComment">
+		INSERT INTO BLOG_COMMENT VALUES(
+		BLOG_COMMENT_seq.nextval,
+		#{blog_no},
+		#{member_no},
+		#{comment_content},
+		SYSDATE,
+		0
+		)
+	</insert>
+	
+	<select id="commentList" resultType="com.match.hgv.vo.BlogCommentVo">
+		SELECT*FROM BLOG_COMMENT WHERE blog_no = #{blog_no}
+		ORDER BY comment_no DESC
+	</select>
+	
+	<delete id="deleteBComment">
+	DELETE FROM BLOG_COMMENT WHERE comment_no = #{commentNo}
+	</delete>
+	
+	
+	
+</mapper>
+

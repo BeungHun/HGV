@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.match.hgv.freeboard.mapper.FreeBoardSQLMapper">
+
+	<insert id="insertBoard">
+		INSERT INTO HGV_FreeBoard VALUES(
+			HGV_FreeBoard_seq.nextval,
+			#{member_no},
+			#{board_title},
+			#{board_content},
+			#{board_readcount},
+			SYSDATE
+		)
+
+	</insert>
+	
+	<select id="selectAll" resultType="com.match.hgv.vo.FreeBoardVo">
+	SELECT t2.* FROM(
+		SELECT t1.* , ROWNUM as rnum FROM(
+		SELECT * FROM HGV_FreeBoard ORDER BY board_no DESC
+		) t1
+		) t2
+		<![CDATA[
+		WHERE t2.rnum >= (#{pageNum}-1)*10+1 AND t2.rnum <= #{pageNum}*10
+		]]>
+	</select>
+	
+	<select id="selectBoardByNo" resultType="com.match.hgv.vo.FreeBoardVo">
+		SELECT * 
+		FROM HGV_FREEBOARD
+		WHERE BOARD_NO = #{boardNo}
+	</select>
+	
+	<update id="increaseReadCount">
+		UPDATE HGV_FREEBOARD 
+		SET BOARD_READCOUNT = BOARD_READCOUNT + 1 
+		WHERE BOARD_NO = #{boardNo}
+	</update>
+
+	<delete id="deleteByNo">
+		DELETE FROM HGV_FREEBOARD WHERE BOARD_NO = #{boardNo}	
+	</delete>
+
+	<update id="updateTitleAndContent">
+		UPDATE HGV_FREEBOARD
+		SET BOARD_TITLE = #{board_title}, BOARD_CONTENT = #{board_content}
+		WHERE BOARD_NO = #{board_no}
+	
+	</update>
+	
+	
+	
+
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+

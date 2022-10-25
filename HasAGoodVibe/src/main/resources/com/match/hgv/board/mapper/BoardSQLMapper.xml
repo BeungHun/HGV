@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.match.hgv.board.mapper.BoardSQLMapper">
+
+	<insert id="insertQAndABoard">
+		INSERT INTO HGV_QandABoard values(
+		HGV_QandABoard_seq.nextval,
+		#{member_no},
+		#{qAndABoard_title},
+		#{qAndABoard_content},
+		0,
+		SYSDATE
+		)
+	</insert>
+	
+	<select id="selectAll" resultType="com.match.hgv.vo.QandABoardVo">
+		SELECT * FROM HGV_QandABoard ORDER BY QandABoard_no DESC
+	</select>
+	
+	<select id="qandAselectByNo" resultType="com.match.hgv.vo.QandABoardVo">
+		SELECT *
+		FROM HGV_QandABoard
+		WHERE QandABoard_no = #{qandABoardNo}	
+	</select>
+	
+	<update id="qandAincreaseReadCount">
+		UPDATE HGV_QandABoard
+		SET qAndABoard_readcount = qAndABoard_readcount +1
+		WHERE qandABoard_no = #{qandABoardNo}
+	</update>
+	<delete id="qandAdeleteByNo">
+		DELETE FROM HGV_QandABoard WHERE qandABoard_no = #{qandABoardNo}
+	</delete>
+	<update id ="qandAupdateTitleAndContent">
+		UPDATE HGV_QandABoard
+		SET qAndABoard_title = #{qAndABoard_title} , qAndABoard_content = #{qAndABoard_content}
+		WHERE QandABoard_no = #{qAndABoard_no}
+	</update>
+	
+	<!-- 공지사항 관련 -->
+	<select id="createNoticePk" resultType="int">
+		SELECT HGV_Notice_seq.nextval FROM Dual
+	</select>
+
+	<select id="selectNoticeAll" resultType="com.match.hgv.vo.NoticeVo">
+		SELECT t2.* FROM (
+			SELECT t1.* , ROWNUM as rnum FROM (
+				SELECT * FROM HGV_Notice
+				<if test="searchContentCategory != null and searchBoardCategory != null and searchWord != null">
+					<choose>
+						<when test="searchContentCategory == 'notice_title' and searchBoardCategory == 'Notice'">
+							WHERE notice_title LIKE '%' || #{searchWord} || '%'
+							AND notice_category = 'Notice'
+						</when>
+						<when test="searchContentCategory == 'notice_content' and searchBoardCategory == 'Notice'">
+							WHERE notice_content LIKE '%' || #{searchWord} || '%'
+							AND notice_category = 'Notice'
+						</when>
+						<when test="searchContentCategory == 'notice_title' and searchBoardCategory == 'Event'">
+							WHERE notice_title LIKE '%' || #{searchWord} || '%'
+							AND notice_category = 'Event'
+						</when>
+						<when test="searchContentCategory == 'notice_content' and searchBoardCategory == 'Event'">
+							WHERE notice_content LIKE '%' || #{searchWord} || '%'
+							AND notice_category = 'Event'
+						</when>
+						<when test="searchContentCategory == 'notice_title' and searchBoardCategory == 'CustomerCenter'">
+							WHERE notice_title LIKE '%' || #{searchWord} || '%'
+							AND notice_category = 'CustomerCenter'
+						</when>
+						<when test="searchContentCategory == 'notice_content' and searchBoardCategory == 'CustomerCenter'">
+							WHERE notice_content LIKE '%' || #{searchWord} || '%'
+							AND notice_category = 'CustomerCenter'
+						</when>
+						
+					</choose>
+				</if>
+				ORDER BY notice_no DESC
+			)t1
+		)t2
+		<![CDATA[
+		WHERE t2.rnum >= (#{pageNum}-1)*10+1 AND t2.rnum <= #{pageNum}*10
+		]]>
+	</select>
+	
+	<select id="selectNoticeByNo" resultType="com.match.hgv.vo.NoticeVo">
+		SELECT * FROM HGV_NOTICE
+		WHERE notice_no = #{NoticeNo}
+	</select>
+	
+	<select id="selectNoticeCount" resultType="int">
+		SELECT count(*) FROM HGV_Notice
+				<if test="searchContentCategory != null and searchBoardCategory != null and searchWord != null">
+					<choose>
+						<when test="searchContentCategory == 'notice_title' and searchBoardCategory == 'Notice'">
+							WHERE notice_title LIKE '%' || #{searchWord} || '%'
+							AND notice_category = 'Notice'
+						</when>
+						<when test="searchContentCategory == 'notice_content' and searchBoardCategory == 'Notice'">
+							WHERE notice_content LIKE '%' || #{searchWord} || '%'
+							AND notice_category = 'Notice'
+						</when>
+						<when test="searchContentCategory == 'notice_title' and searchBoardCategory == 'Event'">
+							WHERE notice_title LIKE '%' || #{searchWord} || '%'
+							AND notice_category = 'Event'
+						</when>
+						<when test="searchContentCategory == 'notice_content' and searchBoardCategory == 'Event'">
+							WHERE notice_content LIKE '%' || #{searchWord} || '%'
+							AND notice_category = 'Event'
+						</when>
+						<when test="searchContentCategory == 'notice_title' and searchBoardCategory == 'CustomerCenter'">
+							WHERE notice_title LIKE '%' || #{searchWord} || '%'
+							AND notice_category = 'CustomerCenter'
+						</when>
+						<when test="searchContentCategory == 'notice_content' and searchBoardCategory == 'CustomerCenter'">
+							WHERE notice_content LIKE '%' || #{searchWord} || '%'
+							AND notice_category = 'CustomerCenter'
+						</when>
+						
+					</choose>
+				</if>
+	</select>
+	
+	<!-- 모든 FAQ리스트 뽑아오기 -->
+	<select id="selectFAQAll" resultType="com.match.hgv.vo.FAQVo">
+		SELECT t2.* FROM (
+			SELECT t1.*,ROWNUM as rnum FROM(
+				SELECT * FROM HGV_FAQ
+				ORDER BY faq_no DESC
+				)t1
+			)t2
+		
+	</select>
+	
+	<select id="selectNoticeFile" resultType="com.match.hgv.vo.NoticeFileInfoVo">
+		SELECT * FROM HGV_Notice_file_info 
+		WHERE notice_no = #{notice_no}
+	</select>
+	
+	<insert id="insertNotice">
+		INSERT INTO HGV_Notice VALUES(
+			#{notice_no},
+			1,
+			#{notice_category},
+			#{notice_title},
+			#{notice_content},
+			SYSDATE
+			)
+	</insert>
+	
+	<insert id="insertFAQ">
+		INSERT INTO HGV_FAQ values(
+			HGV_FAQ_seq.nextval,
+			1,
+			#{faq_title},
+			#{faq_content},
+			#{faq_category},
+			SYSDATE
+		)
+	</insert>
+	
+	<insert id="insertNoticeFile">
+		INSERT INTO HGV_Notice_file_info values(
+			HGV_Notice_file_info_seq.nextval,
+			#{notice_no},
+			#{notice_file_link},
+			#{notice_file_originalName}
+			)
+	</insert>
+	
+	<delete id="deleteNoticeByNo">
+		DELETE FROM HGV_NOTICE
+		WHERE notice_no = #{NoticeNo}
+	</delete>
+	
+	<update id="updateNotice">
+		UPDATE HGV_NOTICE SET 
+		notice_title = #{notice_title},
+		notice_content = #{notice_content}
+		WHERE notice_no = #{notice_no}
+	</update>
+	
+	
+</mapper>

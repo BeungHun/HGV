@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.match.hgv.randomBox.mapper.RandomBoxSQLMapper">
+
+	<select id="createRandomBoxPk" resultType="int">
+		SELECT HGV_RandomBox_seq.nextval FROM Dual
+	</select>
+
+	<insert id="insertRandomBoxBoard">
+		INSERT INTO HGV_RandomBox values(
+		#{randomBox_no},
+		#{member_no},
+		#{stylist_no},
+		#{randomBox_category},
+		#{randomBox_title},
+		#{randomBox_content},
+		#{randomBox_price},
+		0,
+		null,
+		SYSDATE
+		)
+	</insert>
+	
+	<select id="randomBoxSelectAll" resultType="com.match.hgv.vo.RandomBoxVo">
+		SELECT * FROM HGV_RandomBox ORDER BY randomBox_no DESC
+	</select>
+	
+	<select id="randomBoxSelectByNo" resultType="com.match.hgv.vo.RandomBoxVo">
+		SELECT *
+		FROM HGV_RandomBox
+		WHERE randomBox_no = #{randomBoxNo}	
+	</select>
+	
+	<delete id="randomBoxdeleteByNo">
+		DELETE FROM HGV_RandomBox WHERE randomBox_no = #{randomBoxNo}
+	</delete>
+	
+	<update id="randomBoxUpdate">
+		UPDATE HGV_RandomBox
+		SET randomBox_title = #{randomBox_title} , randomBox_content = #{randomBox_content} , randomBox_price = #{randomBox_price}
+		WHERE randomBox_no = #{randomBox_no}
+	
+	</update>
+	<!--  이미지 인서트 -->
+	<insert id="insertRandomBoxImage">
+		INSERT INTO HGV_RandomBox_Img values(
+		HGV_RandomBox_Img_seq.nextval,
+		#{randomBox_no},
+		#{randomBox_Img_link},
+		#{randomBox_Img_name}
+		)
+	</insert>
+	
+	<select id="selectRandomBoxImage" resultType="com.match.hgv.vo.RandomBox_ImgVo">
+		SELECT *
+		FROM HGV_RandomBox_Img
+		WHERE randomBox_no = #{randomBoxNo}	
+	</select>
+	
+	<insert id="insertPost">
+		INSERT INTO HGV_Post values(
+		HGV_Post_seq.nextval,
+		#{postcode},
+		#{roadAddress},
+		#{jibunAddress},
+		null
+		)
+	</insert>
+	
+	<select id="selectpost" resultType="com.match.hgv.vo.PostVo">
+		SELECT *
+		FROM HGV_Post
+		WHERE post_no = #{postNo}	
+	</select>
+	
+	<insert id="insertRandomBoxOrder">
+		INSERT INTO HGV_RandomBoxOrder VALUES(
+			HGV_RandomBoxOrder_seq.nextval,
+			#{stylist_no},
+			#{user_no},
+			#{randomBox_no},
+			#{post_no},
+			#{randomBoxOrder_heigth},
+			#{randomBoxOrder_weight},
+			#{randomBoxOrder_top},
+			#{randomBoxOrder_bottom},
+			#{randomBoxOrder_shoes},
+			sysdate,
+			'처리중'
+		)
+	</insert>
+	
+</mapper>
